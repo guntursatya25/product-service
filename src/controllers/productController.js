@@ -1,5 +1,7 @@
 const Product = require("../models/Product");
 const Yup = require("yup");
+const path = require("path");
+const fs = require("fs");
 
 const productSchema = Yup.object().shape({
   name: Yup.string().required(),
@@ -61,6 +63,10 @@ exports.deleteProduct = async (req, res) => {
       return res.status(404).json({ message: "Product not found" });
     }
 
+    const imagePath = path.join(__dirname, "../../uploads", product.image);
+    if (fs.existsSync(imagePath)) {
+      fs.unlinkSync(imagePath);
+    }
     await product.destroy();
     res.status(204).json({ message: "Product deleted successfully" });
   } catch (error) {
